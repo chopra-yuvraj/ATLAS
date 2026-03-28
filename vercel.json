@@ -1,8 +1,0 @@
-{
-    "crons": [
-        {
-            "path": "/api/recalc",
-            "schedule": "* * * * *"
-        }
-    ]
-}
