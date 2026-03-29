@@ -1,0 +1,26 @@
+PROPRIETARY AND PATENT-PENDING SOFTWARE LICENSE
+
+Copyright (c) 2026 Yuvraj Chopra and Sanskriti Tibrewal.
+All Rights Reserved.
+
+1. PATENT PENDING NOTICE
+The software, mathematical algorithms, methods, and physical hardware implementations (including but not limited to the A.T.L.A.S. dynamic priority scoring engine and M.A.C.H. terminal) contained within this repository are the subject of active or pending intellectual property and patent protections. 
+
+2. PERMITTED USE
+You are granted a limited, non-exclusive, non-transferable right to view and download the source code strictly for personal, educational, and academic evaluation purposes. 
+
+3. RESTRICTIONS
+Unless you have obtained prior explicit written permission from the Copyright Holders, you MUST NOT:
+a) Use this software or its underlying mathematical algorithms for any commercial purpose.
+b) Deploy, install, or use this software or hardware in any live medical, clinical, or hospital environment.
+c) Copy, modify, adapt, or create derivative works based on the algorithms, code, or hardware schematics.
+d) Distribute, sub-license, or sell the software, or any product integrating these algorithms.
+e) File any patent applications covering the concepts, methods, or algorithms disclosed in this repository.
+
+4. NO PATENT GRANT
+Nothing in this License shall be construed as granting, by implication, estoppel, or otherwise, any license or right under any patent, patent application, or other intellectual property right of the Copyright Holders.
+
+5. MEDICAL AND LIABILITY DISCLAIMER
+THIS SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED. It is a proof-of-concept developed for academic and intellectual property demonstration. It is NOT an approved medical device. The Copyright Holders shall not be held liable for any claim, damages, or other liability, whether in an action of contract, tort, or otherwise, arising from, out of, or in connection with the software or the use or other dealings in the software, including any medical decisions or triage outcomes made by third parties referencing this code.
+
+For commercial licensing inquiries or academic collaboration, please contact the authors directly.
