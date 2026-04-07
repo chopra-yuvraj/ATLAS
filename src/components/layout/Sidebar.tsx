@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
     LayoutDashboard, UserPlus, Users, Stethoscope,
-    Settings, Activity, LogOut
+    Settings, Activity, LogOut, KeyRound
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { createClient } from '@/lib/supabase/client';
@@ -22,6 +22,7 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
     { href: '/dashboard', label: 'Live Queue', icon: LayoutDashboard, roles: ['triage_nurse', 'doctor', 'admin', 'receptionist'] },
     { href: '/intake', label: 'New Patient', icon: UserPlus, roles: ['triage_nurse', 'admin'] },
+    { href: '/tokens', label: 'Patient Tokens', icon: KeyRound, roles: ['triage_nurse', 'admin', 'receptionist'] },
     { href: '/doctor', label: 'Doctor View', icon: Stethoscope, roles: ['doctor', 'admin'] },
     { href: '/admin', label: 'Admin Panel', icon: Settings, roles: ['admin'] },
 ];

@@ -20,6 +20,13 @@ export type TriggerSource =
     | 'patient_admission'
     | 'manual_override';
 
+// --- Multilingual Chatbot Module Types ---
+export type SessionStatus = 'active' | 'completed' | 'abandoned' | 'timed_out';
+export type MessageSender = 'patient' | 'ai' | 'system';
+export type InputMethod = 'speech' | 'typed' | 'system';
+export type FormStatus = 'draft' | 'verified' | 'submitted' | 'cancelled';
+export type VerificationMethod = 'verbal' | 'on_screen' | 'staff_assisted';
+
 export interface Staff {
     id: string;
     user_id: string | null;
@@ -59,6 +66,8 @@ export interface Patient {
     assigned_bed_id: string | null;
     admitted_by_id: string | null;
     notes: string | null;
+    language_preference: string;
+    intake_form_id: string | null;
     created_at: string;
     updated_at: string;
 }
@@ -145,4 +154,82 @@ export interface QueueEntry {
     severity_tier: SeverityTier;
     override_rank: number | null;
     override_reason: string | null;
+}
+
+// --- Multilingual Chatbot Module Interfaces ---
+
+export interface SupportedLanguage {
+    id: string;
+    code: string;
+    name: string;
+    native_name: string;
+    stt_supported: boolean;
+    tts_supported: boolean;
+    is_active: boolean;
+    created_at: string;
+}
+
+export interface PatientLoginToken {
+    id: string;
+    patient_id: string;
+    token_code: string;
+    dob_verification: string;
+    is_used: boolean;
+    expires_at: string;
+    generated_by: string;
+    created_at: string;
+}
+
+export interface PatientSession {
+    id: string;
+    patient_id: string;
+    language_code: string;
+    session_status: SessionStatus;
+    device_info: Record<string, unknown> | null;
+    started_at: string;
+    ended_at: string | null;
+    created_at: string;
+}
+
+export interface ChatMessage {
+    id: string;
+    session_id: string;
+    sender: MessageSender;
+    original_text: string | null;
+    translated_text: string | null;
+    original_language: string | null;
+    target_language: string | null;
+    audio_url: string | null;
+    input_method: InputMethod;
+    extracted_fields: Record<string, unknown> | null;
+    sequence_number: number;
+    created_at: string;
+}
+
+export interface PatientIntakeForm {
+    id: string;
+    patient_id: string;
+    session_id: string | null;
+    full_name_regional: string | null;
+    full_name_english: string | null;
+    age: number | null;
+    gender: 'male' | 'female' | 'other' | 'prefer_not_to_say' | null;
+    symptoms_regional: string | null;
+    symptoms_english: string | null;
+    allergies_regional: string | null;
+    allergies_english: string | null;
+    medications_regional: string | null;
+    medications_english: string | null;
+    medical_history_regional: string | null;
+    medical_history_english: string | null;
+    pain_level: string | null;
+    emergency_contact_name: string | null;
+    emergency_contact_phone: string | null;
+    patient_verified: boolean;
+    verification_method: VerificationMethod | null;
+    verified_at: string | null;
+    form_language: string;
+    form_status: FormStatus;
+    created_at: string;
+    updated_at: string;
 }
