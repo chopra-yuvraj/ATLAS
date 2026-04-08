@@ -35,7 +35,7 @@ export async function POST(request: Request) {
             .single();
 
         if (!staff) return apiError('Staff profile not found. Visit /api/fix-staff first.', 403);
-        if (!['triage_nurse', 'admin', 'receptionist'].includes(staff.role)) {
+        if (!['triage_nurse', 'admin', 'frontdesk'].includes(staff.role)) {
             return apiError('Insufficient permissions', 403);
         }
         const body = await request.json();

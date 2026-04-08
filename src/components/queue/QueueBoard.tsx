@@ -7,7 +7,7 @@ import { SeverityBadge } from './SeverityBadge';
 import { PatientDrawer } from './PatientDrawer';
 import { formatWaitTime, formatTimeAgo, cn, SEVERITY_COLORS } from '@/lib/utils';
 import type { QueueEntry } from '@/types/database';
-import { RefreshCw, Users, AlertTriangle } from 'lucide-react';
+import { RefreshCw, Users, AlertTriangle, StickyNote } from 'lucide-react';
 
 export function QueueBoard() {
     const { queue, isLoading, error, lastUpdated, changedPatients, refresh } = useRealtimeQueue();
@@ -146,6 +146,12 @@ export function QueueBoard() {
                                             <p className="text-sm max-w-32 truncate" title={patient.chief_complaint}>
                                                 {patient.chief_complaint}
                                             </p>
+                                            {patient.notes && (
+                                                <p className="text-[11px] text-muted-foreground mt-0.5 max-w-32 truncate flex items-center gap-1" title={patient.notes}>
+                                                    <StickyNote className="h-3 w-3 text-amber-500 shrink-0" />
+                                                    {patient.notes}
+                                                </p>
+                                            )}
                                         </td>
                                         <td className="p-3">
                                             <SeverityBadge tier={patient.severity_tier} />

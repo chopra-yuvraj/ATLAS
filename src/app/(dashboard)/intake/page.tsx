@@ -8,6 +8,7 @@ import { VariableSlider } from '@/components/triage/VariableSlider';
 import { ScorePreview } from '@/components/triage/ScorePreview';
 import { CTAS_LEVELS, type CTASLevel } from '@/types/triage';
 import { UserPlus, ChevronRight, Zap, Search, Info } from 'lucide-react';
+import { PageGuard } from '@/components/layout/PageGuard';
 
 // ─────────────────────────────────────────────────────────────
 // DISEASE PRESET DATABASE — Zero-latency hardcoded profiles
@@ -121,7 +122,7 @@ function getAgeLabel(dob: string): string {
     return `${ageYears}y — Very Elderly`;
 }
 
-export default function IntakePage() {
+function IntakePage() {
     const router = useRouter();
 
     const [ctasLevel, setCtasLevel] = useState<CTASLevel>(3);
@@ -423,9 +424,12 @@ export default function IntakePage() {
                             </div>
 
                             <div className="space-y-1.5">
-                                <label htmlFor="notes" className="text-sm font-medium">Clinical notes</label>
-                                <input id="notes" placeholder="Any additional observations" value={notes} onChange={e => setNotes(e.target.value)}
-                                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
+                                <label htmlFor="notes" className="text-sm font-medium flex items-center gap-1.5">
+                                    Triage Note
+                                    <span className="text-[10px] font-normal text-muted-foreground bg-amber-100 dark:bg-amber-900 text-amber-700 dark:text-amber-300 px-1.5 py-0.5 rounded">Visible on Queue</span>
+                                </label>
+                                <textarea id="notes" placeholder="Add clinical observations, special instructions, or context that other staff should see on the queue board..." value={notes} onChange={e => setNotes(e.target.value)} rows={3}
+                                    className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring resize-none" />
                             </div>
 
                             <hr className="border-border" />
@@ -498,4 +502,8 @@ export default function IntakePage() {
             </form>
         </div>
     );
+}
+
+export default function IntakePageGuarded() {
+    return <PageGuard><IntakePage /></PageGuard>;
 }

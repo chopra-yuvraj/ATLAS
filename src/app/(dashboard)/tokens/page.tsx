@@ -3,6 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import { KeyRound, Copy, Check, RefreshCw, Clock, User, AlertCircle, Loader2, Search } from 'lucide-react';
+import { PageGuard } from '@/components/layout/PageGuard';
 
 interface Token {
     id: string;
@@ -21,6 +22,10 @@ interface Patient {
 }
 
 export default function TokensPage() {
+    return <PageGuard><TokensContent /></PageGuard>;
+}
+
+function TokensContent() {
     const [tokens, setTokens] = useState<Token[]>([]);
     const [patients, setPatients] = useState<Patient[]>([]);
     const [selectedPatient, setSelectedPatient] = useState('');

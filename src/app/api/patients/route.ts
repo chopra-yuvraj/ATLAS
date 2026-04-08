@@ -3,6 +3,8 @@ import { createServiceClient } from '@/lib/supabase/server';
 import { computeScore, getNextRecalcInterval } from '@/lib/scoring-engine';
 import { CTAS_LEVELS } from '@/types/triage';
 import { apiError, apiSuccess } from '@/lib/utils';
+import { mapComplaintToDepartment } from '@/lib/department-mapper';
+import { selectBestDoctor, type DoctorCandidate } from '@/lib/load-balancer';
 import { z } from 'zod';
 
 const CreatePatientSchema = z.object({
@@ -163,7 +165,77 @@ export async function POST(request: Request) {
             triggered_by_id: admitted_by_id || null,
         });
 
-        return apiSuccess({ patient, triageScore }, 201);
+        // Step 6: Auto-assign department based on chief complaint
+        let departmentMatch = null;
+        let doctorAssignment = null;
+        try {
+            const { data: departments } = await supabase
+                .from('departments')
+                .select('id, name, code, keywords')
+                .eq('is_active', true);
+
+            if (departments && departments.length > 0) {
+                departmentMatch = mapComplaintToDepartment(chief_complaint, departments);
+
+                if (departmentMatch.departmentId) {
+                    await supabase
+                        .from('patients')
+                        .update({ department_id: departmentMatch.departmentId })
+                        .eq('id', patient.id);
+
+                    // Step 7: Auto-assign doctor via load balancer
+                    const { data: profiles } = await supabase
+                        .from('doctor_profiles')
+                        .select('*, staff(full_name)')
+                        .eq('is_accepting_patients', true);
+
+                    if (profiles && profiles.length > 0) {
+                        const candidates: DoctorCandidate[] = profiles.map(p => ({
+                            id: p.id,
+                            staff_id: p.staff_id,
+                            staffName: p.staff?.full_name ?? 'Unknown',
+                            department_id: p.department_id,
+                            specialization: p.specialization,
+                            current_load: p.current_load,
+                            max_concurrent_patients: p.max_concurrent_patients,
+                            availability_status: p.availability_status,
+                            is_accepting_patients: p.is_accepting_patients,
+                            last_patient_assigned_at: p.last_patient_assigned_at,
+                            min_rest_minutes: p.min_rest_minutes,
+                        }));
+
+                        const best = selectBestDoctor(candidates, departmentMatch.departmentId);
+                        if (best) {
+                            await supabase.from('patient_assignments').insert({
+                                patient_id: patient.id,
+                                doctor_profile_id: best.doctorProfileId,
+                                department_id: departmentMatch.departmentId,
+                                assignment_reason: 'auto_load_balance',
+                                assignment_score: best.score,
+                                specialization_match: best.specializationMatch,
+                                doctor_load_at_assignment: best.loadAtAssignment,
+                            });
+
+                            await supabase
+                                .from('patients')
+                                .update({ assigned_doctor_id: best.doctorProfileId })
+                                .eq('id', patient.id);
+
+                            await supabase
+                                .from('doctor_profiles')
+                                .update({ last_patient_assigned_at: new Date().toISOString() })
+                                .eq('id', best.doctorProfileId);
+
+                            doctorAssignment = best;
+                        }
+                    }
+                }
+            }
+        } catch (autoErr) {
+            console.warn('[POST /api/patients] Auto-assignment failed (non-fatal):', autoErr);
+        }
+
+        return apiSuccess({ patient, triageScore, departmentMatch, doctorAssignment }, 201);
     } catch (err) {
         console.error('[POST /api/patients]', err);
         return apiError('Internal server error');

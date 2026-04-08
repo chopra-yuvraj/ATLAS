@@ -2,7 +2,7 @@
 import { createServiceClient, createClient } from '@/lib/supabase/server';
 import { apiError, apiSuccess } from '@/lib/utils';
 
-export async function GET(request: Request) {
+export async function GET() {
     try {
         const authSupabase = await createClient();
         const { data: { session } } = await authSupabase.auth.getSession();
@@ -27,12 +27,18 @@ export async function GET(request: Request) {
             return apiSuccess({ message: 'Your staff profile already existed and has been elevated back to an active Admin!', userId });
         }
 
-        // Create it
+        // Create it — infer role from email
+        let role = 'frontdesk';
+        const lower = email.toLowerCase();
+        if (lower.includes('admin')) role = 'admin';
+        else if (lower.includes('doctor') || lower.includes('doc')) role = 'doctor';
+        else if (lower.includes('nurse')) role = 'triage_nurse';
+
         const { data: newStaff, error } = await supabase.from('staff').insert({
             user_id: userId,
-            full_name: email.split('@')[0],
-            role: 'admin',
-            badge_number: 'STAFF-' + Math.floor(Math.random() * 9000 + 1000), // Random STAFF-1234
+            full_name: email.split('@')[0].replace(/[._-]/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase()),
+            role,
+            badge_number: 'STAFF-' + Math.floor(Math.random() * 9000 + 1000),
             department: 'Emergency',
             is_active: true
         }).select().single();
@@ -42,7 +48,7 @@ export async function GET(request: Request) {
         }
 
         return apiSuccess({
-            message: 'Successfully generated your staff profile! You are now an active Admin.',
+            message: `Successfully generated your staff profile! You are now an active ${role}.`,
             profile: newStaff
         });
         
