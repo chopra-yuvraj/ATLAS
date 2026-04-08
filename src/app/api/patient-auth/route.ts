@@ -47,7 +47,7 @@ export async function POST(request: Request) {
         // Step 4: Get patient info
         const { data: patient, error: patientErr } = await supabase
             .from('patients')
-            .select('id, mrn, full_name, date_of_birth, gender, language_preference')
+            .select('id, mrn, full_name, date_of_birth, gender, language_preference, chief_complaint, allergies, status, arrived_at, notes')
             .eq('id', token.patient_id)
             .single();
 
@@ -135,7 +135,16 @@ export async function POST(request: Request) {
             patient_name: patient.full_name,
             language_code,
             form_id: form?.id || null,
-            form: form || null, // Include the initial full form for the frontend!
+            form: form || null,
+            patient_context: {
+                chief_complaint: patient.chief_complaint,
+                allergies: patient.allergies,
+                gender: patient.gender,
+                date_of_birth: patient.date_of_birth,
+                status: patient.status,
+                arrived_at: patient.arrived_at,
+                notes: patient.notes,
+            },
         }, 200);
 
     } catch (err: any) {
